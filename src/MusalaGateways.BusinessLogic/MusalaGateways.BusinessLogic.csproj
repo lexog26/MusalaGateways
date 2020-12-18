@@ -9,6 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\MusalaGateways.DataLayer\MusalaGateways.DataLayer.csproj" />
     <ProjectReference Include="..\MusalaGateways.DataTransferObjects\MusalaGateways.DataTransferObjects.csproj" />
     <ProjectReference Include="..\MusalaGateways.Domain\MusalaGateways.Domain.csproj" />
   </ItemGroup>
