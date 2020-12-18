@@ -4,7 +4,7 @@ namespace MusalaGateways.Enums
 {
     public enum DeviceStatus
     {
-        Online,
-        Offline
+        Offline,
+        Online
     }
 }
