@@ -13,4 +13,8 @@
     <ProjectReference Include="..\MusalaGateways.Domain\MusalaGateways.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+  </ItemGroup>
+
 </Project>
