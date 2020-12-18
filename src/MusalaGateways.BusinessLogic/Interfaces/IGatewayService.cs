@@ -8,5 +8,11 @@ namespace MusalaGateways.BusinessLogic.Interfaces
 {
     public interface IGatewayService : ITransactionalService<GatewayDto, int>
     {
+        /// <summary>
+        /// Returns gateway's devices
+        /// </summary>
+        /// <param name="gatewayId"></param>
+        /// <returns></returns>
+        Task<IEnumerable<DeviceDto>> GetGatewayDevicesAsync(int gatewayId);
     }
 }

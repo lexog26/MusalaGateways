@@ -18,5 +18,10 @@ namespace MusalaGateways.BusinessLogic.Services
                               IUnitOfWork unitOfWork) : base(mapper, unitOfWork, repository)
         { }
 
+        public async Task<IEnumerable<DeviceDto>> GetGatewayDevicesAsync(int gatewayId)
+        {
+            var gateway = await _repository.GetEntityByIdAsync<Gateway, int>(gatewayId);
+            return _mapper.Map<IEnumerable<DeviceDto>>(gateway.Devices);
+        }
     }
 }
