@@ -5,7 +5,7 @@ using MusalaGateways.DataLayer.EntityConfigs;
 using MusalaGateways.Domain.Entities;
 using System.IO;
 
-namespace SurgerySimulator.DataLayer.Context
+namespace MusalaGateways.DataLayer.Context
 {
     public partial class MusalaContext : DbContext
     {
