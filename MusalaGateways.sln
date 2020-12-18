@@ -14,6 +14,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{15DE368D-F
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusalaGateways.Enums", "src\MusalaGateways.Enums\MusalaGateways.Enums.csproj", "{7A50FDF8-6281-42F3-B415-0F1B1F608483}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusalaGateways.Domain", "src\MusalaGateways.Domain\MusalaGateways.Domain.csproj", "{22BF0228-0551-4F3E-8CF8-57A2D754ACF5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,12 +26,17 @@ Global
 		{7A50FDF8-6281-42F3-B415-0F1B1F608483}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7A50FDF8-6281-42F3-B415-0F1B1F608483}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7A50FDF8-6281-42F3-B415-0F1B1F608483}.Release|Any CPU.Build.0 = Release|Any CPU
+		{22BF0228-0551-4F3E-8CF8-57A2D754ACF5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{22BF0228-0551-4F3E-8CF8-57A2D754ACF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{22BF0228-0551-4F3E-8CF8-57A2D754ACF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22BF0228-0551-4F3E-8CF8-57A2D754ACF5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{7A50FDF8-6281-42F3-B415-0F1B1F608483} = {E7BF95CA-108D-46B8-A002-697AA77E931C}
+		{22BF0228-0551-4F3E-8CF8-57A2D754ACF5} = {E7BF95CA-108D-46B8-A002-697AA77E931C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {763DB454-E0FB-4269-BE60-D3FAB3F44CB7}
