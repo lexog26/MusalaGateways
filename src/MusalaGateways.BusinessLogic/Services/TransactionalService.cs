@@ -4,7 +4,9 @@ using MusalaGateways.DataLayer.Repository.Interface;
 using MusalaGateways.DataLayer.UnitOfWork.Interface;
 using MusalaGateways.DataTransferObjects;
 using MusalaGateways.Domain.Entities;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace MusalaGateways.BusinessLogic.Services
@@ -47,15 +49,21 @@ namespace MusalaGateways.BusinessLogic.Services
 
         public virtual async Task<TDto> GetByIdAsync(TKey id)
         {
-            return _mapper.Map<TDto>(await _repository.GetEntityByIdAsync<TEntity, TKey>(id));
+            var entity = await _repository.GetEntityByIdAsync<TEntity, TKey>(id);
+            return _mapper.Map<TDto>(entity);
         }
 
         public virtual async Task<TDto> UpdateAsync(TDto dto)
         {
-            var entity = _mapper.Map<TEntity>(dto);
-            _repository.Update(entity);
-            await SaveChangesAsync();
-            return _mapper.Map<TDto>(entity);
+            if (_repository.GetCount<TEntity>(x => x.Id.Equals(dto.Id)) > 0)
+            {
+                var entity = _mapper.Map<TEntity>(dto);
+                entity.ModifiedDate = DateTime.UtcNow;
+                _repository.Update(entity);
+                await SaveChangesAsync();
+                return _mapper.Map<TDto>(entity);
+            }
+            return default;
         }
 
         public virtual void SaveChanges()

@@ -92,7 +92,7 @@ namespace MusalaGateways.Api.Controllers
         #region CREATE
 
         /// <summary>
-        /// Create a new gateway
+        /// Creates a new gateway
         /// </summary>
         /// <param name="gatewayDto">Gateway data</param>
         /// <returns>The gateway info persisted</returns>
@@ -143,24 +143,6 @@ namespace MusalaGateways.Api.Controllers
             var deviceDto = await _deviceService.CreateAsync(device);
 
             return Ok(deviceDto);
-        }
-
-        #endregion
-
-        #region UPDATE
-
-        /// <summary>
-        /// Updates an existing gateway
-        /// </summary>
-        /// <param name="gatewayDto">Gateway's data to update</param>
-        /// <returns>Gateway updated</returns>
-        /// <response code="200">Gateway succesfully updated</response>
-        [HttpPut]
-        [ProducesResponseType(typeof(GatewayDto), StatusCodes.Status200OK)]
-        public async Task<IActionResult> UpdateAsync([FromBody] GatewayDto gatewayDto)
-        {
-            var dto = await _gatewayService.UpdateAsync(gatewayDto);
-            return Ok(dto);
         }
 
         #endregion

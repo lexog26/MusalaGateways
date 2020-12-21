@@ -63,9 +63,19 @@ namespace MusalaGateways.Api
 
             //Context
             string connectionString = Configuration.GetConnectionString("MusalaConnectionString");
+            bool inMemoryDb = Configuration.GetValue<bool>("InMemoryDB");
 
-            services.AddDbContext<MusalaContext>(options =>
-              options.UseSqlServer(connectionString));
+            if(inMemoryDb)
+            {
+                services.AddDbContext<MusalaContext>(options =>
+                options.UseInMemoryDatabase("musala"));
+                services.AddScoped<MusalaContext>();
+            }
+            else
+            {
+                services.AddDbContext<MusalaContext>(options =>
+                options.UseSqlServer(connectionString));
+            }
 
             //Unit of work
             services.AddScoped<IUnitOfWork, EntityFrameworkUnitOfWork<MusalaContext>>();
