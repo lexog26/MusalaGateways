@@ -18,5 +18,7 @@
 	- Business logic services. For instance: GatewayService
 ## MusalaGateways.GatewayApi [src/MusalaGateways.GatewayApi]
 	- Gateways Api definition with CRUD methods
+## MusalaGateways.BusinessLogicUnitTest [test/MusalaGateways.BusinessLogicUnitTest]
+	- Unit tests for BusinessLogic services (GatewayService,DeviceService)
 
 #Instalation Guides
