@@ -11,7 +11,11 @@ using MusalaGateways.DataTransferObjects.Dtos;
 
 namespace MusalaGateways.Api.Controllers
 {
-    [Route("api/[controller]")]
+    /// <summary>
+    /// Gateways API
+    /// </summary>
+    [Produces("application/json")]
+    [Route("api/gateways")]
     [ApiController]
     //[Authorize(AuthenticationSchemes = "Bearer")]
     public class GatewaysController : Controller
@@ -19,6 +23,11 @@ namespace MusalaGateways.Api.Controllers
         protected readonly IGatewayService _gatewayService;
         protected readonly IDeviceService _deviceService;
 
+        /// <summary>
+        /// Controller ctor
+        /// </summary>
+        /// <param name="gatewayService"></param>
+        /// <param name="deviceService"></param>
         public GatewaysController(IGatewayService gatewayService, IDeviceService deviceService)
         {
             _gatewayService = gatewayService;
@@ -30,8 +39,10 @@ namespace MusalaGateways.Api.Controllers
         /// <summary>
         /// Gets a gateway by id
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <param name="id">Gateway id</param>
+        /// <returns>Gateway with the requested id</returns>
+        /// <response code="200">Returns the gateway requested</response>
+        /// <response code="404">The requested gateway doesn't exists</response>
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(GatewayDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(GatewayDto), StatusCodes.Status404NotFound)]
@@ -46,7 +57,7 @@ namespace MusalaGateways.Api.Controllers
         }
 
         /// <summary>
-        /// Gets a set of gateways
+        /// Returns all gateways
         /// </summary>
         /// <param name="limit">Number of gateways to return, default all gateways</param>
         /// <returns></returns>
@@ -63,6 +74,8 @@ namespace MusalaGateways.Api.Controllers
         /// </summary>
         /// <param name="id">Gateway id</param>
         /// <returns>Gateway's devices</returns>
+        /// <response code="200">Returns all gateway devices</response>
+        /// <response code="404">The requested gateway doesn't exists</response>
         [HttpGet("{id}/devices")]
         [ProducesResponseType(typeof(IEnumerable<DeviceDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
@@ -81,8 +94,10 @@ namespace MusalaGateways.Api.Controllers
         /// <summary>
         /// Create a new gateway
         /// </summary>
-        /// <param name="gatewayDto"></param>
-        /// <returns></returns>
+        /// <param name="gatewayDto">Gateway data</param>
+        /// <returns>The gateway info persisted</returns>
+        /// <response code="200">The gateway was succesfully added</response>
+        /// <response code="400">The Ipv4 address has not a valid value</response>
         [HttpPost]
         [ProducesResponseType(typeof(GatewayDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
@@ -102,7 +117,10 @@ namespace MusalaGateways.Api.Controllers
         /// </summary>
         /// <param name="id">Gateway id</param>
         /// <param name="device">Device data</param>
-        /// <returns></returns>
+        /// <returns>Device data persisted</returns>
+        /// <response code="200">The device was succesfully added to gateway</response>
+        /// <response code="400">Gateway id parameter and new device data's gatewayId have different values</response>
+        /// <response code="409">Max number of devices exceeded for this gateway</response>
         [HttpPost("{id}/devices")]
         [ProducesResponseType(typeof(DeviceDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
@@ -134,8 +152,9 @@ namespace MusalaGateways.Api.Controllers
         /// <summary>
         /// Updates an existing gateway
         /// </summary>
-        /// <param name="gatewayDto"></param>
-        /// <returns></returns>
+        /// <param name="gatewayDto">Gateway's data to update</param>
+        /// <returns>Gateway updated</returns>
+        /// <response code="200">Gateway succesfully updated</response>
         [HttpPut]
         [ProducesResponseType(typeof(GatewayDto), StatusCodes.Status200OK)]
         public async Task<IActionResult> UpdateAsync([FromBody] GatewayDto gatewayDto)
@@ -151,8 +170,9 @@ namespace MusalaGateways.Api.Controllers
         /// <summary>
         /// Removes an existing gateway
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <param name="id">Gateway id</param>
+        /// <returns>Gateway's deleted data</returns>
+        /// <response code="200">Gateway removed</response>
         [HttpDelete("{id}")]
         [ProducesResponseType(typeof(GatewayDto), StatusCodes.Status200OK)]
         public async Task<IActionResult> DeleteAsync([FromRoute] int id)
@@ -167,6 +187,8 @@ namespace MusalaGateways.Api.Controllers
         /// <param name="id">Gateway id</param>
         /// <param name="deviceId">Device id</param>
         /// <returns>Data of removed device</returns>
+        /// <response code="200">Device succesfully removed</response>
+        /// <response code="400">Gateway doesn't exists or gateway doesn't contains the device</response>
         [HttpDelete("{id}/devices/{deviceId}")]
         [ProducesResponseType(typeof(DeviceDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
