@@ -6,6 +6,7 @@ using MusalaGateways.DataTransferObjects.Dtos;
 using MusalaGateways.Domain.Entities;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -17,6 +18,16 @@ namespace MusalaGateways.BusinessLogic.Services
                               IMapper mapper,
                               IUnitOfWork unitOfWork) : base(mapper, unitOfWork, repository)
         { }
+
+        public override Task<GatewayDto> CreateAsync(GatewayDto dto)
+        {
+            IPAddress address;
+            if (!IPAddress.TryParse(dto.Ipv4Address, out address))
+            {
+                throw new InvalidOperationException("Invalid ipv4 address");
+            }
+            return base.CreateAsync(dto);
+        }
 
         public async Task<IEnumerable<DeviceDto>> GetGatewayDevicesAsync(int gatewayId)
         {
