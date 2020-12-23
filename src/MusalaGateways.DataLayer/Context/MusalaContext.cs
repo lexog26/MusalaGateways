@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 using MusalaGateways.DataLayer.EntityConfigs;
 using MusalaGateways.Domain.Entities;
+using System;
 using System.IO;
 
 namespace MusalaGateways.DataLayer.Context
@@ -26,10 +27,8 @@ namespace MusalaGateways.DataLayer.Context
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-
             new GatewayConfig(builder.Entity<Gateway>());
             new DeviceConfig(builder.Entity<Device>());
         }
-
     }
 }

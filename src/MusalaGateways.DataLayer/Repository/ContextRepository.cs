@@ -24,14 +24,14 @@ namespace MusalaGateways.DataLayer.Repository
 
         #region Create
 
-        public TKey Create<TEntity, TKey>(TEntity entity) where TEntity : Entity<TKey>
+        public virtual TKey Create<TEntity, TKey>(TEntity entity) where TEntity : Entity<TKey>
         {
             entity.CreatedDate = DateTime.UtcNow;
             _context.Add(entity);
             return entity.Id;
         }
 
-        public IEnumerable<TKey> Create<TEntity, TKey>(IEnumerable<TEntity> entities) where TEntity : Entity<TKey>
+        public virtual IEnumerable<TKey> Create<TEntity, TKey>(IEnumerable<TEntity> entities) where TEntity : Entity<TKey>
         {
             foreach (var entity in entities)
             {
@@ -43,14 +43,14 @@ namespace MusalaGateways.DataLayer.Repository
 
         #region Delete
 
-        public TEntity Delete<TEntity, TKey>(TKey id) where TEntity : Entity<TKey>
+        public virtual TEntity Delete<TEntity, TKey>(TKey id) where TEntity : Entity<TKey>
         {
             var entity = _context.Find<TEntity>(id);
             Delete(entity);
             return entity;
         }
 
-        public bool Delete<TEntity>(TEntity entity) where TEntity : class
+        public virtual bool Delete<TEntity>(TEntity entity) where TEntity : class
         {
             if (entity != null)
             {
@@ -163,7 +163,7 @@ namespace MusalaGateways.DataLayer.Repository
             return GetFirst(filter: x => x.Id.Equals(id), noTracking: noTracking, selector: selector);
         }
 
-        public async Task<TEntity> GetEntityByIdAsync<TEntity, TKey>(TKey id, bool noTracking = false)
+        public virtual async Task<TEntity> GetEntityByIdAsync<TEntity, TKey>(TKey id, bool noTracking = false)
             where TEntity : Entity<TKey>
         {
             var entity = await _context.FindAsync<TEntity>(id);
