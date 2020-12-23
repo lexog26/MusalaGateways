@@ -122,5 +122,50 @@ namespace MusalaGateways.BusinessLogicUnitTest
             Assert.AreEqual(resultIds.Count(), ids.Count);
             Assert.IsTrue(resultIds.Where(x => ids.Contains(x)).Count() == ids.Count);
         }
+
+        [TestCase(1)]
+        [TestCase(2)]
+        public void GetGatewayDevicesTest(int id)
+        {
+            var gateway = new Gateway
+            {
+                Id = 1,
+                Name = "Gateway 1",
+                Ipv4Address = "192.145.68.24",
+                SerialNumber = "5632",
+                Devices = new List<Device>
+                    {
+                        new Device
+                        {
+                            Id = 1,
+                            GatewayId = 1
+                        }
+                    }
+            };
+            _mockRepo.Setup(x => x.GetEntityByIdAsync<Gateway, int>(1, It.IsAny<bool>()))
+                .Returns(() => Task.FromResult(gateway));
+
+            _mockMapper.Setup(x => x.Map<IEnumerable<DeviceDto>>(It.IsAny<IEnumerable<Device>>()))
+                .Returns(() => new List<DeviceDto>
+                {
+                    new DeviceDto
+                    {
+                       Id = 1,
+                       GatewayId = 1
+                    }
+                });
+            try
+            {
+                var result = _service.GetGatewayDevicesAsync(id).Result;
+                Assert.AreEqual(result.Count(), gateway.Devices.Count());
+                Assert.AreEqual(result.First().GatewayId, gateway.Id);
+            }
+            catch(Exception e)
+            {
+                //Gateway doesn't exists
+                Assert.IsTrue(gateway.Id != id);
+            }
+            
+        }
     }
 }
