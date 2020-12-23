@@ -138,9 +138,6 @@ namespace MusalaGateways.Api
             //Unit of work
             services.AddScoped<IUnitOfWork, EntityFrameworkUnitOfWork<MusalaContext>>();
 
-            //Repository
-            //services.AddScoped<IRepository, ContextRepository<MusalaContext>>();
-
             //Services
             services.AddScoped<IGatewayService, GatewayService>();
             services.AddScoped<IDeviceService, DeviceService>();
