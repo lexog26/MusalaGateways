@@ -81,10 +81,15 @@ namespace MusalaGateways.Api.Controllers
         [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetGatewayDevicesByIdAsync([FromRoute] int id)
         {
-            IEnumerable<DeviceDto> devices = await _gatewayService.GetGatewayDevicesAsync(id);
-            if (!devices.Any())
-                return NotFound();
-            return Ok(devices);
+            try
+            {
+                IEnumerable<DeviceDto> devices = await _gatewayService.GetGatewayDevicesAsync(id);
+                return Ok(devices);
+            }
+            catch(KeyNotFoundException e)
+            {
+                return NotFound("The requested gateway doesn't exists");
+            }
         }
 
         #endregion
@@ -135,7 +140,7 @@ namespace MusalaGateways.Api.Controllers
                 return BadRequest();
             }
 
-            if(gatewayDto.DevicesIds.Count() > 10)
+            if(gatewayDto.DevicesIds.Count() >= 10)
             {
                 return Conflict("Max number of devices exceeded for this gateway");
             }

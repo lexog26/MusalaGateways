@@ -124,18 +124,22 @@ namespace MusalaGateways.Api
             {
                 services.AddDbContext<MusalaContext>(options =>
                 options.UseInMemoryDatabase("musala"));
+                //Repository
+                services.AddScoped<IRepository, ContextInMemoryRepository<MusalaContext>>();
             }
             else
             {
                 services.AddDbContext<MusalaContext>(options =>
                 options.UseSqlServer(connectionString));
+                //Repository
+                services.AddScoped<IRepository, ContextRepository<MusalaContext>>();
             }
 
             //Unit of work
             services.AddScoped<IUnitOfWork, EntityFrameworkUnitOfWork<MusalaContext>>();
 
             //Repository
-            services.AddScoped<IRepository, ContextRepository<MusalaContext>>();
+            //services.AddScoped<IRepository, ContextRepository<MusalaContext>>();
 
             //Services
             services.AddScoped<IGatewayService, GatewayService>();

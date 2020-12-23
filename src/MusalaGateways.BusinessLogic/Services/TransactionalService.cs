@@ -49,6 +49,9 @@ namespace MusalaGateways.BusinessLogic.Services
 
         public virtual async Task<TDto> GetByIdAsync(TKey id)
         {
+            //var g = (await _repository.GetAllAsync<Gateway>()).ToList();
+            //var e = (await _repository.GetAllAsync<Device>()).ToList();
+
             var entity = await _repository.GetEntityByIdAsync<TEntity, TKey>(id);
             return _mapper.Map<TDto>(entity);
         }
