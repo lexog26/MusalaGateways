@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace MusalaGateways.Api.Configurations
+namespace MusalaGateways.Api.Swagger
 {
     public class SwaggerConfiguration
     {

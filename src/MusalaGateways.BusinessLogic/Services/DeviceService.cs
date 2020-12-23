@@ -20,7 +20,7 @@ namespace MusalaGateways.BusinessLogic.Services
         public override async Task<DeviceDto> CreateAsync(DeviceDto dto)
         {
             var gateway = await _repository.GetEntityByIdAsync<Gateway, int>(dto.GatewayId);
-            if(gateway.Devices.Count() == 10)
+            if(gateway.Devices != null && gateway.Devices.Count() == 10)
             {
                 throw new ArgumentOutOfRangeException($"Max number of devices for this gateway: {dto.GatewayId}");
             }

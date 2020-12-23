@@ -15,7 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using MusalaGateways.Api.Configurations;
+using MusalaGateways.Api.Swagger;
 using MusalaGateways.BusinessLogic.Configurations.Mapper;
 using MusalaGateways.BusinessLogic.Interfaces;
 using MusalaGateways.BusinessLogic.Services;
@@ -24,6 +24,7 @@ using MusalaGateways.DataLayer.Repository;
 using MusalaGateways.DataLayer.Repository.Interface;
 using MusalaGateways.DataLayer.UnitOfWork;
 using MusalaGateways.DataLayer.UnitOfWork.Interface;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace MusalaGateways.Api
 {
@@ -39,6 +40,31 @@ namespace MusalaGateways.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //IdentityServer
+            //IdentityServer configs
+            var builder = services.AddIdentityServer(options =>
+            {
+                options.Events.RaiseErrorEvents = true;
+                options.Events.RaiseInformationEvents = true;
+                options.Events.RaiseFailureEvents = true;
+                options.Events.RaiseSuccessEvents = true;
+            })
+                .AddInMemoryIdentityResources(IdentityConfig.Ids)
+                .AddInMemoryApiResources(IdentityConfig.Apis)
+                .AddInMemoryClients(IdentityConfig.Clients)
+                .AddDeveloperSigningCredential();
+
+            ////Identity(Bearer access token)
+            string identityUrl = Configuration.GetValue<string>("IdentityServerUrl");
+
+            services.AddAuthentication("Bearer")
+            .AddJwtBearer(options =>
+            {
+                options.Authority = identityUrl;
+                options.RequireHttpsMetadata = false;
+                options.Audience = "gatewaysApi";
+            });
+
             //Swagger
             services.AddSwaggerGen(swagger =>
             {
@@ -48,11 +74,37 @@ namespace MusalaGateways.Api
                         Title = SwaggerConfiguration.DocInfoTitle,
                         Version = "v1",
                         Description = SwaggerConfiguration.DocInfoDescription,
-                        Contact = new OpenApiContact
-                        {
-                            Name = SwaggerConfiguration.ContactName,
-                        }
                     });
+
+                swagger.AddSecurityDefinition("OAuth2", 
+                    new OpenApiSecurityScheme
+                    {
+                        Type = SecuritySchemeType.OAuth2,
+                        Flows = new OpenApiOAuthFlows
+                        {
+                            ClientCredentials = new OpenApiOAuthFlow
+                            {
+                                TokenUrl = new Uri($"{identityUrl}/connect/token"),
+                                Scopes = new Dictionary<string, string>
+                                {
+                                    {"gatewaysApi",  "Musala gateways API"}
+                                }
+                            },
+                        }
+                    }
+                );
+
+                swagger.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    { 
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference{ Type = ReferenceType.SecurityScheme, Id = "OAuth2"}
+                        }, 
+                        new List<string>(){"gatewaysApi"}
+                    }
+                });
+
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 swagger.IncludeXmlComments(xmlPath);
@@ -69,7 +121,6 @@ namespace MusalaGateways.Api
             {
                 services.AddDbContext<MusalaContext>(options =>
                 options.UseInMemoryDatabase("musala"));
-                services.AddScoped<MusalaContext>();
             }
             else
             {
@@ -80,7 +131,7 @@ namespace MusalaGateways.Api
             //Unit of work
             services.AddScoped<IUnitOfWork, EntityFrameworkUnitOfWork<MusalaContext>>();
 
-            //Repositories
+            //Repository
             services.AddScoped<IRepository, ContextRepository<MusalaContext>>();
 
             //Services
@@ -103,12 +154,19 @@ namespace MusalaGateways.Api
 
             app.UseRouting();
 
+            app.UseIdentityServer();
+
+            app.UseAuthentication();
+
             app.UseAuthorization();
 
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint(SwaggerConfiguration.EndpointUrl, SwaggerConfiguration.EndpointDescription);
+                c.OAuthClientId("MusalaGatewaysApiSwagger");
+                c.OAuthClientSecret("musalaGatewaysSecret");
+                c.OAuthAppName("SwaggerUI Client");
                 c.RoutePrefix = string.Empty;
             });
 

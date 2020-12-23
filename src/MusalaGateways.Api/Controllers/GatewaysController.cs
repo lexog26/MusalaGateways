@@ -17,7 +17,7 @@ namespace MusalaGateways.Api.Controllers
     [Produces("application/json")]
     [Route("api/gateways")]
     [ApiController]
-    //[Authorize(AuthenticationSchemes = "Bearer")]
+    [Authorize(AuthenticationSchemes = "Bearer")]
     public class GatewaysController : Controller
     {
         protected readonly IGatewayService _gatewayService;
@@ -51,7 +51,7 @@ namespace MusalaGateways.Api.Controllers
             var gateway = await _gatewayService.GetByIdAsync(id);
             if(gateway == null)
             {
-                NotFound();
+                return NotFound();
             }
             return Ok(gateway);
         }
@@ -106,7 +106,7 @@ namespace MusalaGateways.Api.Controllers
             IPAddress address;
             if (!IPAddress.TryParse(gatewayDto.Ipv4Address, out address))
             {
-                BadRequest("Invalid Ipv4 address");
+                return BadRequest("Invalid Ipv4 address");
             }
             var dto = await _gatewayService.CreateAsync(gatewayDto);
             return Ok(dto);
