@@ -55,14 +55,17 @@ namespace MusalaGateways.Api
                 .AddDeveloperSigningCredential();
 
             ////Identity(Bearer access token)
-            string identityUrl = Configuration.GetValue<string>("IdentityServerUrl");
+            string identityUrl = Configuration["Auth:Authority"];
+            string clientId = Configuration["Auth:ClientId"];
+            string clientSecret = Configuration["Auth:ClientSecret"];
+            string scope = Configuration["Auth:Scope"];
 
             services.AddAuthentication("Bearer")
             .AddJwtBearer(options =>
             {
                 options.Authority = identityUrl;
                 options.RequireHttpsMetadata = false;
-                options.Audience = "gatewaysApi";
+                options.Audience = scope;
             });
 
             //Swagger
@@ -87,7 +90,7 @@ namespace MusalaGateways.Api
                                 TokenUrl = new Uri($"{identityUrl}/connect/token"),
                                 Scopes = new Dictionary<string, string>
                                 {
-                                    {"gatewaysApi",  "Musala gateways API"}
+                                    {scope,  "Musala gateways API"}
                                 }
                             },
                         }
@@ -96,12 +99,12 @@ namespace MusalaGateways.Api
 
                 swagger.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
-                    { 
+                    {
                         new OpenApiSecurityScheme
                         {
                             Reference = new OpenApiReference{ Type = ReferenceType.SecurityScheme, Id = "OAuth2"}
-                        }, 
-                        new List<string>(){"gatewaysApi"}
+                        },
+                        new List<string>(){ scope }
                     }
                 });
 
@@ -164,8 +167,8 @@ namespace MusalaGateways.Api
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint(SwaggerConfiguration.EndpointUrl, SwaggerConfiguration.EndpointDescription);
-                c.OAuthClientId("MusalaGatewaysApiSwagger");
-                c.OAuthClientSecret("musalaGatewaysSecret");
+                c.OAuthClientId(Configuration["Auth:ClientId"]);
+                c.OAuthClientSecret(Configuration["Auth:ClientSecret"]);
                 c.OAuthAppName("SwaggerUI Client");
                 c.RoutePrefix = string.Empty;
             });
