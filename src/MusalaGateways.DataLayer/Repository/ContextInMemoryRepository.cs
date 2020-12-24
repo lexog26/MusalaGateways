@@ -22,5 +22,18 @@ namespace MusalaGateways.DataLayer.Repository
             return base.GetEntityByIdAsync<TEntity, TKey>(id, noTracking);
         }
 
+        public override TEntity Delete<TEntity, TKey>(TKey id)
+        {
+            var gateways = GetAll<Gateway>().ToList();
+            var devices = GetAll<Device>().ToList();
+            return base.Delete<TEntity, TKey>(id);
+        }
+
+        public override bool Delete<TEntity>(TEntity entity)
+        {
+            var gateways = GetAll<Gateway>().ToList();
+            var devices = GetAll<Device>().ToList();
+            return base.Delete(entity);
+        }
     }
 }

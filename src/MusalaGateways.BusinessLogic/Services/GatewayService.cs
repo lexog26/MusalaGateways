@@ -26,6 +26,7 @@ namespace MusalaGateways.BusinessLogic.Services
             {
                 throw new InvalidOperationException("Invalid ipv4 address");
             }
+            dto.DevicesIds = new List<int>();
             return base.CreateAsync(dto);
         }
 

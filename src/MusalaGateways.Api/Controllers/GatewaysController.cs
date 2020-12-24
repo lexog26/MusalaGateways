@@ -125,6 +125,7 @@ namespace MusalaGateways.Api.Controllers
         /// <returns>Device data persisted</returns>
         /// <response code="200">The device was succesfully added to gateway</response>
         /// <response code="400">Gateway id parameter and new device data's gatewayId have different values</response>
+        /// <response code="404">The requested gateway doesn't exists</response>
         /// <response code="409">Max number of devices exceeded for this gateway</response>
         [HttpPost("{id}/devices")]
         [ProducesResponseType(typeof(DeviceDto), StatusCodes.Status200OK)]
@@ -135,7 +136,12 @@ namespace MusalaGateways.Api.Controllers
         {
             var gatewayDto = await _gatewayService.GetByIdAsync(id);
 
-            if (id != device.GatewayId || gatewayDto == null)
+            if (gatewayDto == null)
+            {
+                return NotFound("The requested gateway doesn't exists");
+            }
+
+            if (id != device.GatewayId)
             {
                 return BadRequest();
             }
