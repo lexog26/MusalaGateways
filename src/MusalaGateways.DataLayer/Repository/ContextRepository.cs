@@ -17,21 +17,21 @@ namespace MusalaGateways.DataLayer.Repository
     {
         protected readonly TContext _context;
 
-        public ContextRepository(TContext context) 
+        public ContextRepository(TContext context)
         {
             _context = context;
         }
 
         #region Create
 
-        public virtual TKey Create<TEntity, TKey>(TEntity entity) where TEntity : Entity<TKey>
+        public TKey Create<TEntity, TKey>(TEntity entity) where TEntity : Entity<TKey>
         {
             entity.CreatedDate = DateTime.UtcNow;
             _context.Add(entity);
             return entity.Id;
         }
 
-        public virtual IEnumerable<TKey> Create<TEntity, TKey>(IEnumerable<TEntity> entities) where TEntity : Entity<TKey>
+        public IEnumerable<TKey> Create<TEntity, TKey>(IEnumerable<TEntity> entities) where TEntity : Entity<TKey>
         {
             foreach (var entity in entities)
             {
@@ -43,14 +43,14 @@ namespace MusalaGateways.DataLayer.Repository
 
         #region Delete
 
-        public virtual TEntity Delete<TEntity, TKey>(TKey id) where TEntity : Entity<TKey>
+        public TEntity Delete<TEntity, TKey>(TKey id) where TEntity : Entity<TKey>
         {
             var entity = _context.Find<TEntity>(id);
             Delete(entity);
             return entity;
         }
 
-        public virtual bool Delete<TEntity>(TEntity entity) where TEntity : class
+        public bool Delete<TEntity>(TEntity entity) where TEntity : class
         {
             if (entity != null)
             {
@@ -89,49 +89,133 @@ namespace MusalaGateways.DataLayer.Repository
 
         #endregion
 
-        public IEnumerable<TEntity> GetAll<TEntity>(Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null, int? skip = null, int? take = null, bool noTracking = false)
+        public IEnumerable<TEntity> GetAll<TEntity>(
+            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
+            int? skip = null,
+            int? take = null,
+            bool noTracking = false,
+            params string[] includeProperties)
             where TEntity : class
         {
-            return GetQueryable(orderBy: orderBy, skip: skip, take: take, noTracking: noTracking).OfType<TEntity>();
+            return GetQueryable(
+                orderBy: orderBy,
+                skip: skip,
+                take: take,
+                noTracking: noTracking,
+                includeProperties: includeProperties);
         }
 
-        public IEnumerable<object> GetAll<TEntity>(Expression<Func<TEntity, object>> selector, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null, int? skip = null, int? take = null, bool noTracking = false)
+        public IEnumerable<TSelectType> GetAll<TEntity, TSelectType>(
+            Expression<Func<TEntity, TSelectType>> selector,
+            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
+            int? skip = null,
+            int? take = null,
+            bool noTracking = false,
+            params string[] includeProperties)
             where TEntity : class
         {
-            return GetQueryable(orderBy: orderBy, skip: skip, take: take, noTracking: noTracking, selector: selector);
+            return GetQueryable(
+                selector: selector,
+                orderBy: orderBy,
+                skip: skip,
+                take: take,
+                noTracking: noTracking,
+                includeProperties: includeProperties);
         }
 
-        public async Task<IEnumerable<TEntity>> GetAllAsync<TEntity>(Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null, int? skip = null, int? take = null, bool noTracking = false)
+        public async Task<IEnumerable<TEntity>> GetAllAsync<TEntity>(
+            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
+            int? skip = null,
+            int? take = null,
+            bool noTracking = false,
+            params string[] includeProperties)
             where TEntity : class
         {
-            var query = GetQueryable(orderBy: orderBy, skip: skip, take: take, noTracking: noTracking).OfType<TEntity>();
+            var query = GetQueryable(
+                orderBy: orderBy,
+                skip: skip,
+                take: take,
+                noTracking: noTracking,
+                includeProperties: includeProperties);
             return await query.ToListAsync();
         }
 
-        public async Task<IEnumerable<object>> GetAllAsync<TEntity>(Expression<Func<TEntity, object>> selector, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null, int? skip = null, int? take = null, bool noTracking = false)
+        public async Task<IEnumerable<TSelectType>> GetAllAsync<TEntity, TSelectType>(
+            Expression<Func<TEntity, TSelectType>> selector,
+            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
+            int? skip = null,
+            int? take = null,
+            bool noTracking = false,
+            params string[] includeProperties)
             where TEntity : class
         {
-            var query = GetQueryable(selector: selector, orderBy: orderBy, skip: skip, take: take, noTracking: noTracking);
+            var query = GetQueryable(
+                selector: selector,
+                orderBy: orderBy,
+                skip: skip,
+                take: take,
+                noTracking: noTracking,
+                includeProperties: includeProperties);
             return await query.ToListAsync();
         }
 
-        public IEnumerable<TEntity> GetByFilter<TEntity>(Expression<Func<TEntity, bool>> filter = null, Expression<Func<TEntity, object>> selector = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null, int? skip = null, int? take = null, bool noTracking = false)
+        public IEnumerable<TSelectType> GetByFilter<TEntity, TSelectType>(
+            Expression<Func<TEntity, bool>> filter = null,
+            Expression<Func<TEntity, TSelectType>> selector = null,
+            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
+            int? skip = null,
+            int? take = null,
+            bool noTracking = false,
+            params string[] includeProperties)
             where TEntity : class
         {
-            return GetQueryable(selector: selector, filter: filter, orderBy: orderBy, skip: skip, take: take, noTracking: noTracking).OfType<TEntity>();
+            return GetQueryable(
+                selector: selector,
+                filter: filter,
+                orderBy: orderBy,
+                skip: skip,
+                take: take,
+                noTracking: noTracking,
+                includeProperties: includeProperties);
         }
 
-        public async Task<IEnumerable<TEntity>> GetByFilterAsync<TEntity>(Expression<Func<TEntity, bool>> filter = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null, int? skip = null, int? take = null, bool noTracking = false)
+        public async Task<IEnumerable<TEntity>> GetByFilterAsync<TEntity>(
+            Expression<Func<TEntity, bool>> filter = null,
+            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
+            int? skip = null,
+            int? take = null,
+            bool noTracking = false,
+            params string[] includeProperties)
             where TEntity : class
         {
-            var query = GetQueryable(filter: filter, orderBy: orderBy, skip: skip, take: take, noTracking: noTracking).OfType<TEntity>();
+            var query = GetQueryable(
+                filter: filter,
+                orderBy: orderBy,
+                skip: skip,
+                take: take,
+                noTracking: noTracking,
+                includeProperties: includeProperties);
             return await query.ToListAsync();
         }
 
-        public async Task<IEnumerable<object>> GetByFilterAsync<TEntity>(Expression<Func<TEntity, object>> selector, Expression<Func<TEntity, bool>> filter = null,  Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null, int? skip = null, int? take = null, bool noTracking = false)
+        public async Task<IEnumerable<TSelectType>> GetByFilterAsync<TEntity, TSelectType>(
+            Expression<Func<TEntity, TSelectType>> selector,
+            Expression<Func<TEntity, bool>> filter = null,
+            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
+            int? skip = null,
+            int? take = null,
+            bool noTracking = false,
+            params string[] includeProperties)
             where TEntity : class
         {
-            var query = GetQueryable(selector: selector, filter: filter, orderBy: orderBy, skip: skip, take: take, noTracking: noTracking).OfType<TEntity>();
+            var query = GetQueryable(
+                filter: filter,
+                selector: selector,
+                orderBy: orderBy,
+                skip: skip,
+                take: take,
+                noTracking: noTracking,
+                includeProperties: includeProperties);
             return await query.ToListAsync();
         }
 
@@ -146,38 +230,29 @@ namespace MusalaGateways.DataLayer.Repository
             return await GetQueryable(filter: filter).CountAsync();
         }
 
-        public TEntity GetEntityById<TEntity,TKey>(TKey id, bool noTracking = false)
+        public TEntity GetEntityById<TEntity, TKey>(TKey id, bool noTracking = false, params string[] includeProperties)
             where TEntity : Entity<TKey>
         {
-            var entity = _context.Find<TEntity>(id);
-            if (entity != null && noTracking)
+            if (includeProperties == null || includeProperties.Length == 0)
             {
-                _context.Entry(entity).State = EntityState.Detached;
+                var entity = _context.Find<TEntity>(id);
+                if (entity != null && noTracking)
+                {
+                    _context.Entry(entity).State = EntityState.Detached;
+                }
+                return entity;
             }
-            return entity;
+            return GetFirstOrDefault<TEntity>(
+                filter: x => x.Id.Equals(id),
+                noTracking: noTracking,
+                includeProperties: includeProperties
+                );
         }
 
-        public object GetEntityById<TEntity, TKey>(TKey id, Expression<Func<TEntity, object>> selector, bool noTracking = false)
+        public Task<TEntity> GetEntityByIdAsync<TEntity, TKey>(TKey id, bool noTracking = false, params string[] includeProperties)
             where TEntity : Entity<TKey>
         {
-            return GetFirst(filter: x => x.Id.Equals(id), noTracking: noTracking, selector: selector);
-        }
-
-        public virtual async Task<TEntity> GetEntityByIdAsync<TEntity, TKey>(TKey id, bool noTracking = false)
-            where TEntity : Entity<TKey>
-        {
-            var entity = await _context.FindAsync<TEntity>(id);
-            if (noTracking)
-            {
-                _context.Entry(entity).State = EntityState.Detached;
-            }
-            return entity;
-        }
-
-        public async Task<object> GetEntityByIdAsync<TEntity, TKey>(TKey id, Expression<Func<TEntity, object>> selector, bool noTracking = false)
-            where TEntity : Entity<TKey>
-        {
-            return await GetFirstAsync(selector: selector, filter: x => x.Id.Equals(id), noTracking: noTracking);
+            return Task.FromResult(GetEntityById<TEntity, TKey>(id, noTracking, includeProperties));
         }
 
         public bool GetExists<TEntity>(Expression<Func<TEntity, bool>> filter = null) where TEntity : class
@@ -191,63 +266,130 @@ namespace MusalaGateways.DataLayer.Repository
             return await GetQueryable(filter: filter).AnyAsync();
         }
 
-        public TEntity GetFirst<TEntity>(Expression<Func<TEntity, bool>> filter = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null, bool noTracking = false)
+        public TEntity GetFirstOrDefault<TEntity>(
+            Expression<Func<TEntity, bool>> filter = null,
+            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
+            bool noTracking = false,
+            params string[] includeProperties)
             where TEntity : class
         {
-            return GetQueryable(filter: filter, orderBy: orderBy, noTracking: noTracking).OfType<TEntity>().FirstOrDefault();
+            return GetQueryable(
+                filter: filter,
+                orderBy: orderBy,
+                noTracking: noTracking,
+                includeProperties: includeProperties
+                ).FirstOrDefault();
         }
 
-        public object GetFirst<TEntity>(Expression<Func<TEntity, object>> selector, Expression<Func<TEntity, bool>> filter = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null, bool noTracking = false)
+        public TSelectType GetFirstOrDefault<TEntity, TSelectType>(
+            Expression<Func<TEntity, TSelectType>> selector,
+            Expression<Func<TEntity, bool>> filter = null,
+            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
+            bool noTracking = false,
+            params string[] includeProperties)
             where TEntity : class
         {
-            return GetQueryable(filter: filter, selector: selector, orderBy: orderBy, noTracking: noTracking).FirstOrDefault();
+            return GetQueryable(
+                filter: filter,
+                selector: selector,
+                orderBy: orderBy,
+                noTracking: noTracking,
+                includeProperties: includeProperties).FirstOrDefault();
         }
 
-        public async Task<TEntity> GetFirstAsync<TEntity>(Expression<Func<TEntity, bool>> filter = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null, bool noTracking = false)
+        public async Task<TEntity> GetFirstOrDefaultAsync<TEntity>(
+            Expression<Func<TEntity, bool>> filter = null,
+            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
+            bool noTracking = false,
+            params string[] includeProperties)
             where TEntity : class
         {
-            var query = GetQueryable(filter: filter, orderBy: orderBy, noTracking: noTracking).OfType<TEntity>();
-            return await query.FirstOrDefaultAsync();
+            return await GetQueryable(
+                filter: filter,
+                orderBy: orderBy,
+                noTracking: noTracking,
+                includeProperties: includeProperties).FirstOrDefaultAsync();
         }
 
-        public async Task<object> GetFirstAsync<TEntity>(Expression<Func<TEntity, object>> selector, Expression<Func<TEntity, bool>> filter = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null, bool noTracking = false)
+        public async Task<TSelectType> GetFirstOrDefaultAsync<TEntity, TSelectType>(
+            Expression<Func<TEntity, TSelectType>> selector,
+            Expression<Func<TEntity, bool>> filter = null,
+            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
+            bool noTracking = false,
+            params string[] includeProperties)
             where TEntity : class
         {
-            var query = GetQueryable(filter: filter, selector: selector, orderBy: orderBy, noTracking: noTracking);
-            return await query.FirstOrDefaultAsync();
+            return await GetQueryable(
+                filter: filter,
+                selector: selector,
+                orderBy: orderBy,
+                noTracking: noTracking,
+                includeProperties: includeProperties).FirstOrDefaultAsync();
         }
 
-        
+
 
         #region Queries generator
 
         /// <summary>
-        /// Creates a Queryable
+        /// Creates a TEntity IQueryable
         /// </summary>
-        /// <param name="filter"></param>
-        /// <param name="orderBy"></param>
-        /// <param name="skip"></param>
-        /// <param name="take"></param>
-        /// <param name="noTracking">
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="filter">IQueryable filter</param>
+        /// <param name="orderBy">IQueryable order by</param>
+        /// <param name="skip">Number of elements to skip in resulting IQueryable</param>
+        /// <param name="take">Number of elements to take in resulting IQueryable</param>
+        /// <param name="noTracking"></param>
         /// Specify the track performance using the queryable.AsNoTracking() method
-        /// noTracking=true => the change tracker will not track any returned entity by EF
+        /// noTracking = true => the change tracker will not track any returned entity by EF
         /// default noTracking = false
-        /// </param>
-        /// <param name="selector"></param>
+        /// <param name="includeProperties">Navigation properties to include</param>
         /// <returns></returns>
-        protected virtual IQueryable<object> GetQueryable<TEntity>(
+        protected virtual IQueryable<TSelectType> GetQueryable<TEntity, TSelectType>(
+            Expression<Func<TEntity, TSelectType>> selector,
             Expression<Func<TEntity, bool>> filter = null,
             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
             int? skip = null,
             int? take = null,
             bool noTracking = false,
-            Expression<Func<TEntity, object>> selector = null) where TEntity : class
+            params string[] includeProperties)
+            where TEntity : class
+        {
+            IQueryable<TEntity> query = GetQueryable(
+                filter: filter,
+                skip: skip,
+                take: take,
+                orderBy: orderBy,
+                noTracking: noTracking,
+                includeProperties: includeProperties
+            );
+
+            return query.Select(selector);
+        }
+
+
+        protected virtual IQueryable<TEntity> GetQueryable<TEntity>(
+            Expression<Func<TEntity, bool>> filter = null,
+            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
+            int? skip = null,
+            int? take = null,
+            bool noTracking = false,
+            params string[] includeProperties)
+            where TEntity : class
         {
             IQueryable<TEntity> query = _context.Set<TEntity>();
 
             if (filter != null)
             {
                 query = query.Where(filter);
+            }
+
+            if (includeProperties != null)
+            {
+                foreach (var property in includeProperties)
+                {
+                    query = query.Include(property);
+                }
             }
 
             if (orderBy != null)
@@ -265,16 +407,8 @@ namespace MusalaGateways.DataLayer.Repository
                 query = query.Take(take.Value);
             }
 
-            IQueryable<object> result = query;
-
-            if (selector != null)
-            {
-                result = query.Select(selector);
-            }
-
-            return noTracking ? result.AsNoTracking() : result;
+            return noTracking ? query.AsNoTracking() : query;
         }
-
         #endregion
     }
 }
